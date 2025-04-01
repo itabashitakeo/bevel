@@ -1,5 +1,5 @@
 # This playbook executes required tasks to install and instantiate external chaincode 
-# on existing Kubernetes clusters. The Kubernetes clusters should already be created and the infomation 
+# on existing Kubernetes clusters. The Kubernetes clusters should already be created and the information 
 # to connect to the clusters be updated in the network.yaml file that is used as an input to this playbook
 ###########################################################################################
 # To Run this playbook from this directory, use the following command (network.yaml also in this directory)
@@ -12,6 +12,11 @@
 - hosts: ansible_provisioners
   gather_facts: no
   tasks:
+    # delete build directory
+    - name: Remove build directory
+      file:
+        path: "./build"
+        state: absent
     # This role updates the peers with updated core.yaml
     - name: Create all peers with core.yaml
       include_role:
@@ -30,7 +35,7 @@
         values_dir: "{{playbook_dir}}/../../../{{item.gitops.release_dir}}/{{ item.name | lower }}"
       loop: "{{ network['organizations'] }}"
       when: item.type == 'peer'
-    
+
     ############################################################################################
     # Check if CA server is available
     - name: "Check for the CA server running in {{ item.name | lower }}-net"
@@ -77,9 +82,9 @@
       include_role:
         name: "create/chaincode/peer_certs"
       vars:
-        component_name: "{{ item.name | lower}}-net"
-        component_type: "{{ item.type | lower}}"
-        org_name: "{{ item.name }}"
+        component_name: "{{ item.name | lower }}-net"
+        component_type: "{{ item.type | lower }}"
+        org_name: "{{ item.name | lower }}"
         services: "{{ item.services }}"
         subject: "{{ item.subject }}"
         cert_subject: "{{ item.subject | regex_replace('/', ';') | regex_replace(',', '/') | regex_replace(';', ',') }}" # replace , to / and / to , for certpath
@@ -98,9 +103,9 @@
       include_role:
         name: "create/chaincode/server_certs"
       vars:
-        component_name: "{{ item.name | lower}}-net"
-        component_type: "{{ item.type | lower}}"
-        org_name: "{{ item.name }}"
+        component_name: "{{ item.name | lower }}-net"
+        component_type: "{{ item.type | lower }}"
+        org_name: "{{ item.name | lower }}"
         services: "{{ item.services }}"
         subject: "{{ item.subject }}"
         cert_subject: "{{ item.subject | regex_replace('/', ';') | regex_replace(',', '/') | regex_replace(';', ',') }}" # replace , to / and / to , for certpath
@@ -138,7 +143,7 @@
       when: 
         - item.type == 'peer'
         - item.org_status == 'new'
-    
+
     ############################################################################################
     # This task deploys the external chaincode server for desired org
     - name: Deploy external chaincode server
@@ -197,7 +202,7 @@
         docker_url: "{{ network.docker.url }}"
         approvers: "{{ item.endorsers | default('', true) }}"
       loop: "{{ network['channels'] }}"
-      when: add_new_org == 'true' or '2.2.' in network.version    
+      when: add_new_org == 'true' or '2.' in network.version    
 
   vars: #These variables can be overriden from the command line
     privilege_escalate: false           #Default to NOT escalate to root privledges

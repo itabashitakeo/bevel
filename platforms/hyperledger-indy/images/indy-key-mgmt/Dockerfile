@@ -4,7 +4,7 @@ USER root
 
 ARG ROCKS_DB_VERSION=5.8.8
 ARG LIBINDY_CRYPTO_VERSION=0.4.5
-ARG INDY_NODE_VERSION=1.12.1
+ARG INDY_NODE_VERSION=1.12.6
 
 ENV VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3 \
     WORKON_HOME=$HOME/.virtualenvs \
@@ -34,7 +34,7 @@ RUN apt-get update && \
     apt-get update && \
     apt-get install -y python3.5 python3-pip python3.5-dev jq
 
-RUN pip3 install --upgrade "pip < 21.0" setuptools==50.3.2
+RUN pip3 install --upgrade "pip < 21.0" setuptools==50.3.2 Cython==0.29.36
 
 # Installing virtualenvwrapper
 RUN pip3 install virtualenvwrapper
@@ -45,7 +45,7 @@ RUN apt-get update && \
 
 RUN add-apt-repository "deb http://us.archive.ubuntu.com/ubuntu xenial main universe" && \
     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys CE7709D068DB5E88 && \
-    add-apt-repository "deb https://repo.sovrin.org/deb xenial master" && \
+    add-apt-repository "deb https://repo.sovrin.org/deb xenial stable" && \
     add-apt-repository "deb https://repo.sovrin.org/sdk/deb xenial stable" && \
     apt-get update
 
@@ -66,8 +66,9 @@ RUN apt-get install -y libindy libindy-crypto=${LIBINDY_CRYPTO_VERSION}
 RUN mkdir -p ${INDY_HOME}
 WORKDIR ${INDY_HOME}
 COPY config/indy_config.py ${INDY_CONFIG_DIR}
-RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh; mkvirtualenv ${NETWORK_NAME}; workon ${NETWORK_NAME}; pip3 install indy-node==${INDY_NODE_VERSION}"  && \    
-    /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh; workon ${NETWORK_NAME}; pip3 install flake8 requests"
+RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh; mkvirtualenv ${NETWORK_NAME}; workon ${NETWORK_NAME}; pip3 install Cython==0.29.36 certifi==2021.10.8 pyzmq"
+RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh; workon ${NETWORK_NAME}; pip3 install indy-node==${INDY_NODE_VERSION}"   
+RUN /bin/bash -c "source /usr/local/bin/virtualenvwrapper.sh; workon ${NETWORK_NAME}; pip3 install flake8 requests"
 
 COPY src/identity_crypto_generator.py /.virtualenvs/${NETWORK_NAME}/lib/python3.5/site-packages/plenum/common/identity_crypto_generator.py
 COPY src/identity_crypto_generator_v2.py /.virtualenvs/${NETWORK_NAME}/lib/python3.5/site-packages/plenum/common/identity_crypto_generator_v2.py

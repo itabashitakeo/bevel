@@ -1,4 +1,4 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: {{ component_name }}
@@ -15,13 +15,16 @@ spec:
         kind: GitRepository
         name: flux-{{ network.env.type }}
         namespace: flux-{{ network.env.type }}
-      chart: {{ charts_dir }}/commit_chaincode
+      chart: {{ charts_dir }}/fabric-chaincode-commit
   values:
     metadata:
       namespace: {{ namespace }}
+      network:
+        version: {{ network.version }}
       images:
-        fabrictools: {{ fabrictools_image }}
-        alpineutils: {{ alpine_image }}
+        fabrictools: {{ docker_url }}/{{ fabric_tools_image[network.version] }}
+        alpineutils: {{ docker_url }}/{{ alpine_image }}
+
     peer:
       name: {{ peer_name }}
       address: {{ peer_address }}
@@ -31,17 +34,13 @@ spec:
     vault:
       role: vault-role
       address: {{ vault.url }}
-{% if org.k8s.cluster_id is defined %}
-      authpath: {{ org.k8s.cluster_id }}{{ namespace | e }}-auth
-{% else %}
-      authpath: {{ network.env.type }}{{ namespace | e }}-auth
-{% endif %}
-      adminsecretprefix: {{ vault.secret_path | default('secretsv2') }}/data/crypto/peerOrganizations/{{ namespace }}/users/admin
-      orderersecretprefix: {{ vault.secret_path | default('secretsv2') }}/data/crypto/peerOrganizations/{{ namespace }}/orderer
+      authpath: {{ org.k8s.cluster_id | default('')}}{{ network.env.type }}{{ org.name | lower }}
+      adminsecretprefix: {{ vault.secret_path | default('secretsv2') }}/data/{{ org.name | lower }}/peerOrganizations/{{ namespace }}/users/admin
+      orderersecretprefix: {{ vault.secret_path | default('secretsv2') }}/data/{{ org.name | lower }}/peerOrganizations/{{ namespace }}/orderer
       secretpath: {{ vault.secret_path | default('secretsv2') }}
       serviceaccountname: vault-auth
       type: {{ vault.type | default("hashicorp") }}
-{% if network.docker.username is defined and network.docker.password is defined %}
+{% if network.docker.username is defined and network.docker.password is defined %}    
       imagesecretname: regcred
 {% else %}
       imagesecretname: ""
@@ -56,6 +55,7 @@ spec:
       sequence: {{ component_chaincode.sequence | default('1') }}
       commitarguments: {{ component_chaincode.arguments | default('') | quote }}
       endorsementpolicies: {{ component_chaincode.endorsements | default('') | quote }}
+      initrequired: {{ component_chaincode.init_required }}
 {% if component_chaincode.repository is defined %}
       repository:
         hostname: "{{ component_chaincode.repository.url.split('/')[0] | lower }}"

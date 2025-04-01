@@ -10,3 +10,6 @@ k8_templates:
   orderer_cli_job: orderer_cli.tpl
   operator_mainchannel: operator_mainchannel.tpl
   operator_followerchannel: operator_followerchannel.tpl
+
+bevel_alpine_version: latest # Change to tag version when using tag specific images
+fabric_tools_image: bevel-fabric-tools

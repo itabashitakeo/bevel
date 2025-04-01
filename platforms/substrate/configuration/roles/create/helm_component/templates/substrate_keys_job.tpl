@@ -1,4 +1,4 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: {{ component_name }}
@@ -32,6 +32,6 @@ spec:
     vault:
       address: {{ vault.url }}
       role: vault-role
-      authpath: substrate{{ name }}
+      authpath: {{ network.env.type }}{{ name }}
       serviceaccountname: vault-auth
-      certsecretprefix: {{ vault.secret_path | default('secretsv2') }}/data/{{ component_ns }}
+      certsecretprefix: {{ vault.secret_path | default('secretsv2') }}/data/{{ name }}

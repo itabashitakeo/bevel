@@ -14,7 +14,7 @@ network:
   # Network level configuration specifies the attributes required for each organization
   # to join an existing network.
   type: fabric
-  version: 2.2.2                 #Addition of ordrer organization only works for 2.2.2
+  version: 2.2.2                 #Addition of ordrer organization works for 2.2.2 and 2.5.4
 
   frontend: enabled #Flag for frontend to enabled for nodes/peers
 
@@ -46,26 +46,24 @@ network:
       type: orderer
       name: orderer1
       org_name: supplychain               #org_name should match one organization definition below in organizations: key            
-      uri: orderer1.org1ambassador.blockchaincloudpoc.com:443   # Must include port, Can be external or internal URI for orderer which should be reachable by all peers
-      certificate: /home/bevel/build/orderer1.crt           # Ensure that the directory exists
+      uri: orderer1.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443   # Must include port, Can be external or internal URI for orderer which should be reachable by all peers
     - orderer:
       type: orderer
       name: orderer2
       org_name: supplychain               #org_name should match one organization definition below in organizations: key            
-      uri: orderer2.org1ambassador.blockchaincloudpoc.com:443   # Must include port, Can be external or internal URI for orderer which should be reachable by all peers
-      certificate: /home/bevel/build/orderer2.crt           # Ensure that the directory exists
+      uri: orderer2.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443   # Must include port, Can be external or internal URI for orderer which should be reachable by all peers
     - orderer:
       type: orderer
       name: orderer3
       org_name: supplychain               #org_name should match one organization definition below in organizations: key            
-      uri: orderer3.org1ambassador.blockchaincloudpoc.com:443   # Must include port, Can be external or internal URI for orderer which should be reachable by all peers
-      certificate: /home/bevel/build/orderer3.crt           # Ensure that the directory exists
+      uri: orderer3.supplychain-net.org1proxy.hlf.blockchaincloudpoc-develop.com:443   # Must include port, Can be external or internal URI for orderer which should be reachable by all peers
   
   # The channels defined for a network with participating peers in each channel
   channels:
   - channel:
     consortium: SupplyChainConsortium
     channel_name: AllChannel
+    channel_status: new
     chaincodes:
       - "chaincode_name"
     orderers: 
@@ -78,9 +76,9 @@ network:
       peers:
       - peer:
         name: peer0
-        gossipAddress: peer0.carrier-net.org3ambassador.blockchaincloudpoc.com:443  # Must include port, External or internal URI of the gossip peer
-        peerAddress: peer0.carrier-net.org3ambassador.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
-      ordererAddress: orderer1.org1ambassador.blockchaincloudpoc.com:443             # Must include port, External or internal URI of the orderer
+        gossipAddress: peer0.carrier-net.org3proxy.blockchaincloudpoc.com:443  # Must include port, External or internal URI of the gossip peer
+        peerAddress: peer0.carrier-net.org3proxy.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
+      ordererAddress: orderer1.supplychain-net.org1proxy.blockchaincloudpoc.com:443             # Must include port, External or internal URI of the orderer
     - organization:      
       name: store
       type: joiner        # joiner organization will only join the channel and install chaincode
@@ -88,9 +86,9 @@ network:
       peers:
       - peer:
         name: peer0
-        gossipAddress: peer0.store-net.org4ambassador.blockchaincloudpoc.com:443
-        peerAddress: peer0.store-net.org4ambassador.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
-      ordererAddress: orderer1.org1ambassador.blockchaincloudpoc.com:443
+        gossipAddress: peer0.store-net.org4proxy.blockchaincloudpoc.com:443
+        peerAddress: peer0.store-net.org4proxy.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
+      ordererAddress: orderer1.supplychain-net.org1proxy.blockchaincloudpoc.com:443
     - organization:
       name: warehouse
       type: joiner
@@ -98,9 +96,9 @@ network:
       peers:
       - peer:
         name: peer0
-        gossipAddress: peer0.warehouse-net.org5ambassador.blockchaincloudpoc.com:443
-        peerAddress: peer0.warehouse-net.org5ambassador.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
-      ordererAddress: orderer1.org1ambassador.blockchaincloudpoc.com:443
+        gossipAddress: peer0.warehouse-net.org5proxy.blockchaincloudpoc.com:443
+        peerAddress: peer0.warehouse-net.org5proxy.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
+      ordererAddress: orderer1.supplychain-net.org1proxy.blockchaincloudpoc.com:443
     - organization:
       name: manufacturer
       type: joiner
@@ -108,9 +106,9 @@ network:
       peers:
       - peer:
         name: peer0
-        gossipAddress: peer0.manufacturer-net.org2ambassador.blockchaincloudpoc.com:443
-        peerAddress: peer0.manufacturer-net.org2ambassador.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
-      ordererAddress: orderer1.org1ambassador.blockchaincloudpoc.com:443
+        gossipAddress: peer0.manufacturer-net.org2proxy.blockchaincloudpoc.com:443
+        peerAddress: peer0.manufacturer-net.org2proxy.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
+      ordererAddress: orderer1.supplychain-net.org1proxy.blockchaincloudpoc.com:443
     endorsers:
     # Only one peer per org required for endorsement
     - organization:
@@ -118,24 +116,22 @@ network:
       peers:
       - peer:
         name: peer0
-        corepeerAddress: peer0.carrier-net.org3ambassador.blockchaincloudpoc.com:443
+        corepeerAddress: peer0.carrier-net.org3proxy.blockchaincloudpoc.com:443
         certificate: "/path/carrier/server.crt" # certificate path for peer
     - organization:
       name: warehouse
       peers:
       - peer:
         name: peer0
-        corepeerAddress: peer0.warehouse-net.org5ambassador.blockchaincloudpoc.com:443
+        corepeerAddress: peer0.warehouse-net.org5proxy.blockchaincloudpoc.com:443
         certificate: "/path/warehouse/server.crt" # certificate path for peer
     - organization:
       name: manufacturer
       peers:
       - peer:
         name: peer0
-        corepeerAddress: peer0.manufacturer-net.org2ambassador.blockchaincloudpoc.com:443
+        corepeerAddress: peer0.manufacturer-net.org2proxy.blockchaincloudpoc.com:443
         certificate: "/path/manufacturer/server.crt" # certificate path for peer
-    genesis:
-      name: OrdererGenesis  
 
   # Allows specification of one or many organizations that will be connecting to a network.
   # If an organization is also hosting the root of the network (e.g. doorman, membership service, etc),
@@ -149,11 +145,9 @@ network:
       state: London
       location: London
       subject: "O=Orderer,L=51.50/-0.13/London,C=GB"
-      type: orderer
-      external_url_suffix: org1ambassador.blockchaincloudpoc.com
+      external_url_suffix: org1proxy.blockchaincloudpoc.com
       org_status: existing # Status of the organization for the existing network, can be new / existing
       ca_data:
-        url: ca.supplychain-net.org1ambassador.blockchaincloudpoc.com
         certificate: file/server.crt        # Path where ca public cert will be stored (if new) or read from (if existing ca)
   
       cloud_provider: aws   # Options: aws, azure, gcp, digitalocean, minikube
@@ -180,7 +174,8 @@ network:
         git_protocol: "https" # Option for git over https or ssh
         git_url: "https://github.com/<username>/bevel.git"         # Gitops https or ssh url for flux value files 
         branch: "develop"           # Git branch where release is being made
-        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        component_dir: "platforms/hyperledger-fabric/releases/k8sComponent" # Relative path where values files are stored. 
         chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: "github.com/<username>/bevel.git"   # Gitops git repository URL for git push 
         username: "git_username"          # Git Service user who has rights to check-in in all branches
@@ -193,7 +188,7 @@ network:
       services:
         ca:
           name: ca
-          subject: "/C=GB/ST=London/L=London/O=Orderer/CN=ca.supplychain-net.org1ambassador.blockchaincloudpoc.com"
+          subject: "/C=GB/ST=London/L=London/O=Orderer/CN=ca.supplychain-net.org1proxy.blockchaincloudpoc.com"
           type: ca
           grpc:
             port: 7054
@@ -211,21 +206,21 @@ network:
           consensus: raft
           grpc:
             port: 7050
-          ordererAddress: orderer1.org1ambassador.blockchaincloudpoc.com:443
+          ordererAddress: orderer1.supplychain-net.org1proxy.blockchaincloudpoc.com:443
         - orderer:
           name: orderer2
           type: orderer
           consensus: raft
           grpc:
             port: 7050
-          ordererAddress: orderer2.org1ambassador.blockchaincloudpoc.com:443
+          ordererAddress: orderer2.org1proxy.blockchaincloudpoc.com:443
         - orderer:
           name: orderer3
           type: orderer
           consensus: raft
           grpc:
             port: 7050
-          ordererAddress: orderer3.org1ambassador.blockchaincloudpoc.com:443
+          ordererAddress: orderer3.org1proxy.blockchaincloudpoc.com:443
       
     # New Orderer Organization
     - organization:
@@ -234,11 +229,9 @@ network:
       state: London
       location: London
       subject: "O=NewOrderer,L=51.50/-0.13/London,C=GB"
-      type: orderer
-      external_url_suffix: org6ambassador.blockchaincloudpoc.com
+      external_url_suffix: org6proxy.blockchaincloudpoc.com
       org_status: new # Status of the organization for the existing network, can be new / existing
       ca_data:
-        url: ca.neworderer-net.org6ambassador.blockchaincloudpoc.com
         certificate: file/server.crt        # Path where ca public cert will be stored (if new) or read from (if existing ca)
   
       cloud_provider: aws   # Options: aws, azure, gcp, digitalocean, minikube
@@ -265,7 +258,8 @@ network:
         git_protocol: "https" # Option for git over https or ssh
         git_url: "https://github.com/<username>/bevel.git"         # Gitops https or ssh url for flux value files 
         branch: "develop"           # Git branch where release is being made
-        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        component_dir: "platforms/hyperledger-fabric/releases/k8sComponent" # Relative path where values files are stored.
         chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: "github.com/<username>/bevel.git"   # Gitops git repository URL for git push 
         username: "git_username"          # Git Service user who has rights to check-in in all branches
@@ -278,7 +272,7 @@ network:
       services:
         ca:
           name: ca
-          subject: "/C=GB/ST=London/L=London/O=NewOrderer/CN=ca.neworderer-net.org6ambassador.blockchaincloudpoc.com"
+          subject: "/C=GB/ST=London/L=London/O=NewOrderer/CN=ca.neworderer-net.org6proxy.blockchaincloudpoc.com"
           type: ca
           grpc:
             port: 7054
@@ -295,14 +289,14 @@ network:
           consensus: raft
           grpc:
             port: 7050
-          ordererAddress: orderer10.org1ambassador.blockchaincloudpoc.com:443
+          ordererAddress: orderer10.org1proxy.blockchaincloudpoc.com:443
         - orderer:
           name: orderer11
           type: orderer
           consensus: raft
           grpc:
             port: 7050
-          ordererAddress: orderer11.org1ambassador.blockchaincloudpoc.com:443
+          ordererAddress: orderer11.org1proxy.blockchaincloudpoc.com:443
 
     # Specification for the 2nd organization. Each organization maps to a VPC and a separate k8s cluster
     - organization:
@@ -311,12 +305,10 @@ network:
       state: Zurich
       location: Zurich
       subject: "O=Manufacturer,OU=Manufacturer,L=47.38/8.54/Zurich,C=CH"
-      type: peer
-      external_url_suffix: org2ambassador.blockchaincloudpoc.com
+      external_url_suffix: org2proxy.blockchaincloudpoc.com
       org_status: existing # Status of the organization for the existing network, can be new / existing
       orderer_org: supplychain # Name of the organization that provides the ordering service
       ca_data:
-        url: ca.manufacturer-net.org2ambassador.blockchaincloudpoc.com
         certificate: file/server.crt
 
       cloud_provider: aws   # Options: aws, azure, gcp, digitalocean, minikube
@@ -343,7 +335,8 @@ network:
         git_protocol: "https" # Option for git over https or ssh
         git_url: "https://github.com/<username>/bevel.git"         # Gitops https or ssh url for flux value files 
         branch: "develop"           # Git branch where release is being made
-        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        component_dir: "platforms/hyperledger-fabric/releases/k8sComponent" # Relative path where values files are stored. 
         chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: "github.com/<username>/bevel.git"   # Gitops git repository URL for git push 
         username: "git_username"          # Git Service user who has rights to check-in in all branches
@@ -356,7 +349,7 @@ network:
       services:
         ca:
           name: ca
-          subject: "/C=CH/ST=Zurich/L=Zurich/O=Manufacturer/CN=ca.manufacturer-net.org2ambassador.blockchaincloudpoc.com"
+          subject: "/C=CH/ST=Zurich/L=Zurich/O=Manufacturer/CN=ca.manufacturer-net.org2proxy.blockchaincloudpoc.com"
           type: ca
           grpc:
             port: 7054
@@ -365,7 +358,7 @@ network:
           name: peer0          
           type: anchor    # This can be anchor/nonanchor. Atleast one peer should be anchor peer.         
           gossippeeraddress: peer0.manufacturer-net:7051 # Internal Address of the other peer in same Org for gossip, same peer if there is only one peer 
-          peerAddress: peer0.manufacturer-net.org2ambassador.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
+          peerAddress: peer0.manufacturer-net.org2proxy.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
           cli: disabled      # Creates a peer cli pod depending upon the (enabled/disabled) tag.         
           grpc:
             port: 7051         
@@ -399,12 +392,10 @@ network:
       state: London
       location: London
       subject: "O=Carrier,OU=Carrier,L=51.50/-0.13/London,C=GB"
-      type: peer
-      external_url_suffix: org3ambassador.blockchaincloudpoc.com
+      external_url_suffix: org3proxy.blockchaincloudpoc.com
       org_status: existing # Status of the organization for the existing network, can be new / existing
       orderer_org: supplychain # Name of the organization that provides the ordering service
       ca_data:
-        url: ca.carrier-net.org3ambassador.blockchaincloudpoc.com
         certificate: file/server.crt
       
       cloud_provider: aws   # Options: aws, azure, gcp, digitalocean, minikube
@@ -431,7 +422,8 @@ network:
         git_protocol: "https" # Option for git over https or ssh
         git_url: "https://github.com/<username>/bevel.git"         # Gitops https or ssh url for flux value files 
         branch: "develop"           # Git branch where release is being made
-        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        component_dir: "platforms/hyperledger-fabric/releases/k8sComponent" # Relative path where values files are stored. 
         chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: "github.com/<username>/bevel.git"   # Gitops git repository URL for git push 
         username: "git_username"          # Git Service user who has rights to check-in in all branches
@@ -442,7 +434,7 @@ network:
       services:
         ca:
           name: ca
-          subject: "/C=GB/ST=London/L=London/O=Carrier/CN=ca.carrier-net.org3ambassador.blockchaincloudpoc.com"
+          subject: "/C=GB/ST=London/L=London/O=Carrier/CN=ca.carrier-net.org3proxy.blockchaincloudpoc.com"
           type: ca
           grpc:
             port: 7054
@@ -451,7 +443,7 @@ network:
           name: peer0          
           type: anchor    # This can be anchor/nonanchor. Atleast one peer should be anchor peer.    
           gossippeeraddress: peer0.carrier-net:7051 # Internal Address of the other peer in same Org for gossip, same peer if there is only one peer 
-          peerAddress: peer0.carrier-net.org3ambassador.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
+          peerAddress: peer0.carrier-net.org3proxy.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
           cli: disabled      # Creates a peer cli pod depending upon the (enabled/disabled) tag.         
           grpc:
             port: 7051         
@@ -485,12 +477,10 @@ network:
       state: New York
       location: New York
       subject: "O=Store,OU=Store,L=40.73/-74/New York,C=US"
-      type: peer
-      external_url_suffix: org4ambassador.blockchaincloudpoc.com
+      external_url_suffix: org4proxy.blockchaincloudpoc.com
       org_status: existing # Status of the organization for the existing network, can be new / existing
       orderer_org: supplychain # Name of the organization that provides the ordering service
       ca_data:
-        url: ca.store-net.org4ambassador.blockchaincloudpoc.com
         certificate: file/server.crt
       
       cloud_provider: aws   # Options: aws, azure, gcp, digitalocean, minikube
@@ -517,7 +507,8 @@ network:
         git_protocol: "https" # Option for git over https or ssh
         git_url: "https://github.com/<username>/bevel.git"         # Gitops https or ssh url for flux value files 
         branch: "develop"           # Git branch where release is being made
-        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        component_dir: "platforms/hyperledger-fabric/releases/k8sComponent" # Relative path where values files are stored. 
         chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: "github.com/<username>/bevel.git"   # Gitops git repository URL for git push 
         username: "git_username"          # Git Service user who has rights to check-in in all branches
@@ -528,7 +519,7 @@ network:
       services:
         ca:
           name: ca
-          subject: "/C=US/ST=New York/L=New York/O=Store/CN=ca.store-net.org4ambassador.blockchaincloudpoc.com"
+          subject: "/C=US/ST=New York/L=New York/O=Store/CN=ca.store-net.org4proxy.blockchaincloudpoc.com"
           type: ca
           grpc:
             port: 7054
@@ -537,7 +528,7 @@ network:
           name: peer0          
           type: anchor    # This can be anchor/nonanchor. Atleast one peer should be anchor peer. 
           gossippeeraddress: peer0.store-net:7051 # Internal Address of the other peer in same Org for gossip, same peer if there is only one peer  
-          peerAddress: peer0.store-net.org4ambassador.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
+          peerAddress: peer0.store-net.org4proxy.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
           cli: disabled       # Creates a peer cli pod depending upon the (enabled/disabled) tag. 
           grpc:
             port: 7051
@@ -571,12 +562,10 @@ network:
       state: Massachusetts
       location: Boston
       subject: "O=Warehouse,OU=Warehouse,L=42.36/-71.06/Boston,C=US"
-      type: peer
-      external_url_suffix: org5ambassador.blockchaincloudpoc.com
+      external_url_suffix: org5proxy.blockchaincloudpoc.com
       org_status: existing # Status of the organization for the existing network, can be new / existing
       orderer_org: supplychain # Name of the organization that provides the ordering service
       ca_data:
-        url: ca.warehouse-net.org5ambassador.blockchaincloudpoc.com
         certificate: file/server.crt
       
       cloud_provider: aws   # Options: aws, azure, gcp, digitalocean, minikube
@@ -603,7 +592,8 @@ network:
         git_protocol: "https" # Option for git over https or ssh
         git_url: "https://github.com/<username>/bevel.git"         # Gitops https or ssh url for flux value files 
         branch: "develop"           # Git branch where release is being made
-        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment. 
+        release_dir: "platforms/hyperledger-fabric/releases/dev" # Relative Path in the Git repo for flux sync per environment.
+        component_dir: "platforms/hyperledger-fabric/releases/k8sComponent" # Relative path where values files are stored. 
         chart_source: "platforms/hyperledger-fabric/charts"     # Relative Path where the Helm charts are stored in Git repo
         git_repo: "github.com/<username>/bevel.git"   # Gitops git repository URL for git push 
         username: "git_username"          # Git Service user who has rights to check-in in all branches
@@ -614,7 +604,7 @@ network:
       services:
         ca:
           name: ca
-          subject: "/C=US/ST=Massachusetts/L=Boston/O=Warehouse/CN=ca.warehouse-net.org5ambassador.blockchaincloudpoc.com"
+          subject: "/C=US/ST=Massachusetts/L=Boston/O=Warehouse/CN=ca.warehouse-net.org5proxy.blockchaincloudpoc.com"
           type: ca
           grpc:
             port: 7054
@@ -623,7 +613,7 @@ network:
           name: peer0          
           type: anchor    # This can be anchor/nonanchor. Atleast one peer should be anchor peer.   
           gossippeeraddress: peer0.warehouse-net:7051 # Internal Address of the other peer in same Org for gossip, same peer if there is only one peer 
-          peerAddress: peer0.warehouse-net.org5ambassador.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
+          peerAddress: peer0.warehouse-net.org5proxy.blockchaincloudpoc.com:443 # Must include port, External URI of the peer
           cli: disabled      # Creates a peer cli pod depending upon the (enabled/disabled) tag.         
           grpc:
             port: 7051       

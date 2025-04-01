@@ -7,6 +7,8 @@
 #############################################################################################
 # This role registers the users using bevel-operator-fabric
 #############################################################################################
+
+# Wait for ca server to be reachable
 - name: "Wait for ca server to be reachable"
   uri:
     url: "https://{{ item.ca_data.url }}/cainfo"
@@ -15,8 +17,9 @@
   until: this.status == 200
   retries: "{{ network.env.retry_count }}"
   delay: 20
-  ignore_errors: yes
+  ignore_errors: true
 
+# Create main user for orderer org
 - name: "Create main user for orderer org"
   shell: |
     KUBECONFIG={{ kubeconfig_path }} kubectl hlf ca register --name={{ ca_name }} --namespace={{ namespace }} \
@@ -30,8 +33,9 @@
   when: 
   - component_type == 'orderer'
   - user_type == 'default'
-  ignore_errors: yes
+  ignore_errors: true
 
+# Create main user for peer org
 - name: "Create main user for peer org"
   shell: |
     KUBECONFIG={{ kubeconfig_path }} kubectl hlf ca register --name={{ ca_name }} --namespace={{ namespace }} \
@@ -46,6 +50,7 @@
   - component_type == 'peer'
   - user_type == 'default'
 
+# Create admin user for org
 - name: "Create admin user for org"
   shell: |
     KUBECONFIG={{ kubeconfig_path }} kubectl hlf ca register --name={{ ca_name }} --namespace={{ namespace }} \
@@ -58,8 +63,9 @@
     kubeconfig_path: "{{ item.k8s.config_file }}"
   when:
   - user_type == 'admin'
-  ignore_errors: yes
+  ignore_errors: true
 
+# Create admin user identity for orderer
 - name: "Create admin user identity for orderer"
   shell: |
     KUBECONFIG={{ kubeconfig_path }} kubectl hlf identity create --name={{ user_id }} --namespace={{ namespace }} \
@@ -75,6 +81,7 @@
   - user_type == 'admin'
   - component_type == 'orderer'
 
+# Create admin user identity for peer
 - name: "Create admin user identity for peer"
   shell: |
     KUBECONFIG={{ kubeconfig_path }} kubectl hlf identity create --name={{ user_id }} --namespace={{ namespace }} \

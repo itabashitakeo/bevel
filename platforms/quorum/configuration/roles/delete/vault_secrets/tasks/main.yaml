@@ -9,7 +9,8 @@
 #############################################################################################
 
 #############################################################################################
-# This task deletes the Docker credentials
+
+# Delete Docker credentials
 - name: Delete docker creds
   k8s:
     kind: Secret
@@ -18,64 +19,19 @@
     state: absent
     kubeconfig: "{{ kubernetes.config_file }}"
     context: "{{ kubernetes.context }}"
-  ignore_errors: yes
+  ignore_errors: true
 
-- name: Delete Ambassador creds
-  k8s:
-    kind: Secret
-    namespace: "{{ org_namespace }}"
-    name: "{{ peer.name }}-ambassador-certs"
-    kubeconfig: "{{ kubernetes.config_file }}"
-    context: "{{ kubernetes.context }}"
-    state: absent
-  loop: "{{ services.peers }}"
-  loop_control:
-    loop_var: peer
-  ignore_errors: yes
-
-# This task deletes vault auth
-- name: Delete vault-auth path
-  shell: |
-    vault kv delete sys/auth/quorum{{ org_name }}
-  environment:
-    VAULT_ADDR: "{{ item.vault.url }}"
-    VAULT_TOKEN: "{{ item.vault.root_token }}"
-
-# This task deletes crypto material
+# Deletes crypto materials
 - name: Delete Crypto material 
   shell: |
-    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ org_namespace }}/crypto/{{ peer.name }}/tm
-    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ org_namespace }}/crypto/{{ peer.name }}/quorum
-    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ org_namespace }}/crypto/{{ peer.name }}/certs
-    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ org_namespace }}/crypto/genesis
-  loop: "{{ services.peers }}"
+    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ network.env.type }}{{ org_name }}/quorum-node-{{ peer.name }}-keys
+    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ network.env.type }}{{ org_name }}/tessera-{{ peer.name }}-keys
+    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ network.env.type }}{{ org_name }}/tlscerts
+    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ network.env.type }}{{ org_name }}/genesis
   environment:
     VAULT_ADDR: "{{ item.vault.url }}"
     VAULT_TOKEN: "{{ item.vault.root_token }}"
+  loop: "{{ services.peers is defined | ternary( services.peers, services.validators) }}"
   loop_control:
     loop_var: peer
-  ignore_errors: yes
-
-  # This task deletes application crypto material
-- name: Delete Application Crypto material 
-  shell: |
-    vault kv delete {{ item.vault.secret_path | default('secretsv2') }}/{{ org_namespace }}/smartContracts/General
-  loop: "{{ services.peers }}"
-  environment:
-    VAULT_ADDR: "{{ item.vault.url }}"
-    VAULT_TOKEN: "{{ item.vault.root_token }}"
-  loop_control:
-    loop_var: peer
-  ignore_errors: yes
-
-# This task deletes vault policies
-- name: Delete Access policies 
-  shell: |
-    vault policy delete vault-crypto-{{ org_namespace }}-{{ peer.name }}-ro
-  loop: "{{ services.peers }}"
-  environment:
-    VAULT_ADDR: "{{ item.vault.url }}"
-    VAULT_TOKEN: "{{ item.vault.root_token }}"
-  loop_control:
-    loop_var: peer
-  ignore_errors: yes
+  ignore_errors: true

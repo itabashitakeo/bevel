@@ -1,4 +1,4 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: {{ component_name }}
@@ -10,7 +10,7 @@ spec:
   interval: 1m
   chart:
    spec:
-    chart: {{ charts_dir }}/tessera_key_mgmt
+    chart: {{ charts_dir }}/besu-tessera-key-mgmt
     sourceRef:
       kind: GitRepository
       name: flux-{{ network.env.type }}
@@ -28,11 +28,11 @@ spec:
       alpineutils: {{ network.docker.url }}/bevel-alpine-ext:{{ bevel_alpine_version }}
     vault:
       address: {{ vault.url }}
-      secretengine: {{ vault.secret_path | default('secretsv2') }}
-      authpath: besu{{ org.name | lower }}
+      secretEngine: {{ vault.secret_path | default('secretsv2') }}
+      authPath: {{ network.env.type }}{{ org.name | lower }}
       role: vault-role
       keyprefix: {{ component_ns }}/crypto
-      serviceaccountname: vault-auth
+      serviceAccountName: vault-auth
       tmprefix: data/{{ component_ns }}/crypto
       type: {{ vault.type | default("hashicorp") }}
 

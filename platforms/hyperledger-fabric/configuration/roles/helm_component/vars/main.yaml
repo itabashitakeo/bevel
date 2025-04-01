@@ -5,8 +5,7 @@
 ##############################################################################################
 
 helm_templates:
-  ca-orderer: ca-orderer.tpl
-  ca-peer: ca-peer.tpl
+  ca-server: ca-server.tpl
   ca-tools: ca-tools.tpl
   cas: ca.tpl
   orderers: orderernode.tpl
@@ -14,6 +13,7 @@ helm_templates:
   peers: peernode.tpl
   value_peer: value_peer.tpl
   create_channel_job: create_channel_job.tpl
+  osn_create_channel_job: osn_create_channel_job.tpl
   join_channel_job: join_channel_job.tpl
   install_chaincode_job: install_chaincode_job.tpl
   instantiate_chaincode_job: instantiate_chaincode_job.tpl
@@ -28,3 +28,17 @@ helm_templates:
   operations_console: operations_console.tpl
   external_chaincode: external_chaincode.tpl
   install_external_chaincode_job: install_external_chaincode_job.tpl
+
+bevel_alpine_version: latest # Change to tag version when using tag specific images
+fabric_tools_image: bevel-fabric-tools
+kafka_image: bevel-fabric-kafka:0.4.18
+zookeeper_image: bevel-fabric-zookeeper:0.4.18
+fabric_console_image: bevel-fabric-console:latest
+orderer_image: bevel-fabric-orderer
+peer_image: bevel-fabric-peer
+couchdb_image: bevel-fabric-couchdb
+
+ca_image:
+  1.4.8: bevel-fabric-ca:1.4.8
+  2.2.2: bevel-fabric-ca:1.4.8
+  2.5.4: bevel-fabric-ca:latest

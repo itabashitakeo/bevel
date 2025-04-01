@@ -4,6 +4,7 @@
 #  SPDX-License-Identifier: Apache-2.0
 ##############################################################################################
 
+# Delete follower channel
 - name: Delete follower channel
   k8s:
     kind: "FabricFollowerChannel"
@@ -12,8 +13,9 @@
     state: absent
     kubeconfig: "{{ kubernetes.config_file }}"
     context: "{{ kubernetes.context }}"
-  ignore_errors: yes
+  ignore_errors: true
 
+# Delete main channel
 - name: Delete main channel
   k8s:
     kind: "FabricMainChannel"
@@ -22,4 +24,4 @@
     state: absent
     kubeconfig: "{{ kubernetes.config_file }}"
     context: "{{ kubernetes.context }}"
-  ignore_errors: yes
+  ignore_errors: true

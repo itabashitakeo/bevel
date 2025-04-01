@@ -38,3 +38,7 @@
 **/.vscode/
 # custom config templates
 *_custom.tpl
+**/charts/*.tgz
+**/files/*.json
+**/files/*.crt
+requirements.lock

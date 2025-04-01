@@ -36,6 +36,19 @@
         release_dir: "{{ playbook_dir }}/../../../{{ item.gitops.release_dir }}/{{ item.name | lower }}"
       loop: "{{ network['organizations'] }}"
       when: item.org_status == 'new'
+
+    # Setup script for Vault and OS Package Manager
+    - name: "Setup script for Vault and OS Package Manager"
+      include_role:
+        name: "{{ playbook_dir }}/../../shared/configuration/roles/setup/scripts"
+      vars:
+        namespace: "{{ org.name | lower }}-net"
+        network_type: "{{ network.type | lower }}"
+        kubernetes: "{{ org.k8s }}"
+      loop: "{{ network['organizations'] }}"
+      loop_control:
+        loop_var: org
+      when: org.org_status == 'new'
     
     # Setup Vault-Kubernetes accesses and Regcred for docker registry for new organization
     - name: "Create vault-auth for new org"
@@ -46,10 +59,9 @@
         component_name: "{{ org.name | lower }}-vaultk8s-job"
         component_type: "{{ org.type | lower }}"
         component_ns: "{{ org.name | lower }}-net"
-        component_auth: "{{ network.env.type }}{{ org.name | lower }}-net-auth"
+        component_auth: "{{ network.env.type }}{{ name }}"
         kubernetes: "{{ org.k8s }}"
         vault: "{{ org.vault }}"
-        policy_type: "fabric"
         gitops: "{{ org.gitops }}"
         reset_path: "platforms/hyperledger-fabric/configuration"
       loop: "{{ network['organizations'] }}"
@@ -60,19 +72,15 @@
     # Create Storageclass for new organization
     - name: "Create storageclass for new org"
       include_role:
-        name: "create/storageclass"
+        name: "{{ playbook_dir }}/../../../platforms/shared/configuration/roles/setup/storageclass"  
       vars:
-        org_name: "{{ item.name | lower }}"
-        cloudProvider: "{{ item.cloud_provider | lower }}"
-        sc_name: "{{ org_name }}-{{ cloudProvider }}-storageclass"
-        component_type: "{{ item.type | lower }}"
-        region: "{{ item.k8s.region | default('eu-west-1') }}"
-        kubernetes: "{{ item.k8s }}"
-        platform_suffix: "net"
-        charts_dir: "platforms/shared/charts"
-        release_dir: "./build"
+        org_name: "{{ org.name | lower }}"
+        sc_name: "{{ org_name }}-bevel-storageclass"
+        region: "{{ org.k8s.region | default('eu-west-1') }}"
       loop: "{{ network['organizations'] }}"
-      when: item.org_status == 'new'
+      loop_control:
+        loop_var: org
+      when: org.org_status == 'new'
         
     # Create CA Server value files and check-in for new organization
     - name: "Create CA Server for new org"
@@ -83,6 +91,7 @@
         component: "{{ item.name | lower}}"
         component_type: "{{ item.type | lower}}"
         component_services: "{{ item.services }}"
+        sc_name: "{{ component }}-bevel-storageclass"
         kubernetes: "{{ item.k8s }}"
         vault: "{{ item.vault }}"
         ca: "{{ item.services.ca }}"
@@ -107,13 +116,15 @@
         component: "{{ item.name | lower}}"
         component_type: "{{ item.type | lower}}"
         component_services: "{{ item.services }}"
+        sc_name: "{{ component }}-bevel-storageclass"
         kubernetes: "{{ item.k8s }}"
         vault: "{{ item.vault }}"
         ca: "{{ item.services.ca }}"
+        docker_url: "{{ network.docker.url }}"
         gitops: "{{ item.gitops }}"
         values_dir: "{{playbook_dir}}/../../../{{item.gitops.release_dir}}/{{ item.name | lower }}"
       loop: "{{ network['organizations'] }}"
-      when: item.type == 'orderer'
+      when: item.type == 'orderer' and item.org_status == 'new' 
 
     # Creating channel artifacts and putting them in vault
     # This role creates configtx.yaml file as the requirements mentioned in network.yaml
@@ -150,7 +161,7 @@
       loop: "{{ network.organizations }}"
       loop_control:
         loop_var: neworg
-      when: neworg.type == 'orderer' and neworg.org_status == 'new'
+      when: neworg.type == 'orderer' and neworg.org_status == 'new' and '2.5.' not in network.version
 
     # This role creates value file for zk-kafka (if kafka consensus is chosen) and orderer
     - name: Create all orderers
@@ -161,6 +172,7 @@
         namespace: "{{ item.name | lower}}-net"
         component_type: "{{ item.type | lower}}"
         component_services: "{{ item.services }}"
+        sys_channel_name: "syschannel"
         vault: "{{ item.vault }}"
         git_protocol: "{{ item.gitops.git_protocol }}"
         git_url: "{{ item.gitops.git_url }}"
@@ -184,7 +196,7 @@
       loop: "{{ network.organizations }}"
       loop_control:
         loop_var: neworg
-      when: neworg.type == 'orderer' and neworg.org_status == 'new' 
+      when: neworg.type == 'orderer' and neworg.org_status == 'new' and '2.5.' not in network.version
 
     # This role adds the new org to the existing chnanel and updates the block with the application channel    
     - name: "Modify the application channel with tls and address information of new orderer"

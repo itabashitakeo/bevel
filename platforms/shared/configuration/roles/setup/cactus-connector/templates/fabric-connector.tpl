@@ -1,4 +1,4 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: {{ name }}-cactus
@@ -10,7 +10,7 @@ spec:
   interval: 1m
   chart:
    spec:
-    chart: {{ charts_dir }}/fabric-connector
+    chart: {{ charts_dir }}/fabric-cacti-connector
     sourceRef:
       kind: GitRepository
       name: flux-{{ network.env.type }}

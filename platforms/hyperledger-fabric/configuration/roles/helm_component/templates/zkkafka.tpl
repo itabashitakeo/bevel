@@ -1,4 +1,4 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: zkkafka-{{ org_name }}-orderer
@@ -20,8 +20,8 @@ spec:
     metadata: 
       namespace: {{ namespace }}
       images:
-        kafka: {{ kafka_image }}
-        zookeeper: {{ zookeeper_image }}
+        kafka: {{ docker_url }}/{{ kafka_image }}
+        zookeeper: {{ docker_url }}/{{ zookeeper_image }}
     storage: 
       storageclassname: {{ sc_name }}
       storagesize: 512Mi

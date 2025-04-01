@@ -4,14 +4,14 @@
 #  SPDX-License-Identifier: Apache-2.0
 ##############################################################################################
 
-# generate ipfs node helmrelease file
+# Generate ipfs node helmrelease file
 - name: "Create ipfs node release file"
   include_role:
     name: create/helm_component
   vars:    
     component_name: "{{ peer.name }}-ipfs-node"
     type: "dscp_ipfs_node"
-    storageclass_name: "{{ item.cloud_provider }}storageclass"
+    storageclass_name: "{{ item.name | lower }}-bevel-storageclass"
     external_url: "{{ item.external_url_suffix }}"
     git_url: "{{ item.gitops.git_url }}"
     git_branch: "{{ item.gitops.branch }}"
@@ -24,7 +24,7 @@
     loop_var: peer
   when: peer.type == "ipfs-bootnode"
 
-  # Git Push : Pushes the above generated files to git directory 
+# Git Push : Push the above generated files to git directory 
 - name: Git Push
   include_role: 
     name: "{{ playbook_dir }}/../../shared/configuration/roles/git_push"
